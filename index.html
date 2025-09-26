@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>اختبار تواصلي مع أفراد عائلتي</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+  <meta name="description" content="اختبار تفاعلي: تواصلي مع أفراد عائلتي — مؤقّت، أصوات، حفظ، طباعة وCSV.">
+  <style>
+    :root{ --bg:#fff6c9; --muted:#5b6475; --accent:#00c2a8; --accent-2:#c9a300; --danger:#ff6b6b; --ok:#12d69a; --shadow:0 12px 30px rgba(0,0,0,.18); --radius:18px;}
+    *{box-sizing:border-box} html,body{height:100%}
+    body{margin:0; background: linear-gradient(180deg, #fff6c9 0%, #fff3bf 40%, #fefae3 100%); font-family:"Cairo", system-ui, -apple-system, Segoe UI, Roboto, "Noto Kufi Arabic", sans-serif; color:#14324a;}
+    .wrap{max-width:1000px;margin:32px auto;padding:16px}
+    header{display:flex; gap:16px; align-items:center; justify-content:space-between; flex-wrap:wrap;}
+    .brand{display:flex; gap:12px; align-items:center}
+    .logo{ width:56px;height:56px; border-radius:14px; background:linear-gradient(135deg,var(--accent),#4ad8ff); color:#062b2b; display:grid;place-items:center; font-weight:800; box-shadow:var(--shadow);}
+    h1{font-size:clamp(22px,3.5vw,36px); margin:0; color:#c08a00}
+    .subtitle{color:#2a3c54; margin-top:4px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,.6),rgba(255,255,255,.45)); border:1px solid rgba(0,0,0,.06); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px}
+    .toolbar{display:flex; gap:10px; flex-wrap:wrap}
+    button,.btn{border:0; border-radius:12px; padding:12px 16px; font-weight:700; cursor:pointer; color:#062b2b; background:linear-gradient(135deg,var(--accent),#4ad8ff); box-shadow:var(--shadow)}
+    button.secondary{background:linear-gradient(135deg,#ffd166,#ffb703)} button.ghost{background:transparent; color:#204569; border:1px dashed rgba(0,0,0,.18)}
+    table{width:100%; border-collapse:separate; border-spacing:0 10px; margin-top:10px}
+    thead th{color:#2a3c54; font-weight:800; text-align:right; padding:10px 12px}
+    tbody tr{background:rgba(255,255,255,.75); border:1px solid rgba(0,0,0,.06)} tbody tr td{padding:14px 12px; vertical-align:middle}
+    tbody tr{border-radius:14px} tbody tr td:first-child{border-radius:14px 0 0 14px} tbody tr td:last-child{border-radius:0 14px 14px 0}
+    .timerBox{display:flex; align-items:center; gap:10px; justify-content:space-between}
+    .time{font-weight:800; letter-spacing:.5px; padding:6px 10px; border-radius:10px; background:#233152; color:#eef6ff; border:1px solid rgba(255,255,255,.08)}
+    .time.warn{background:rgba(255,107,107,.7); border-color:rgba(255,107,107,.9); color:#fff}
+    .msg{font-size:13px; color:#b00020; display:none} .msg.show{display:block}
+    .btnStart{border:0; border-radius:10px; padding:8px 12px; font-weight:800; cursor:pointer; color:#062b2b; background:linear-gradient(135deg,#ffd166,#ffb703); box-shadow:var(--shadow)}
+    .q-text{line-height:1.9; color:#1e2f44} .pill{display:inline-flex; gap:8px; align-items:center; padding:6px 10px; border-radius:999px; font-size:13px; font-weight:700}
+    .result{display:grid; grid-template-columns: 1fr 260px; gap:16px; align-items:start} @media (max-width:820px){.result{grid-template-columns:1fr}}
+    .score-card{background:linear-gradient(135deg, rgba(0,194,168,.25), rgba(0,194,168,.05)); border:1px solid rgba(0,194,168,.35); border-radius:16px; padding:16px}
+    .score{font-size:40px; font-weight:800; color:#184a56} .meter{height:10px; background:#d9e9ff; border-radius:999px; overflow:hidden; margin-top:10px}
+    .bar{height:100%; width:0%; background:linear-gradient(90deg, #ff6b6b, #ffd166, #12d69a); transition:width .4s ease}
+    .footer{color:#294e64; font-size:13px; text-align:center; margin-top:22px}
+    .hint{color:#375f7a; font-size:14px}
+    .kbd{padding:.1rem .4rem; border:1px solid rgba(0,0,0,.2); border-bottom-width:2px; border-radius:6px; font-size:12px; color:#153a4d; background:#fffffe}
+    .seg{display:inline-flex; border:1px solid rgba(0,0,0,.12); border-radius:10px; overflow:hidden}
+    .seg button{background:rgba(255,255,255,.9); color:#17384a; padding:8px 10px; border:0; cursor:pointer}
+    .seg button.active{background:linear-gradient(135deg,var(--accent),#4ad8ff); color:#062b2b}
+    .seg button:not(.active){border-inline-start:1px solid rgba(0,0,0,.08)}
+    /* شريط علوي */
+    .topbar{position:sticky; top:0; z-index:50; backdrop-filter:saturate(120%) blur(6px);
+      display:grid; grid-template-columns: 1fr auto 1fr; align-items:center; gap:12px;
+      padding:10px 16px; background:linear-gradient(180deg, #c8f3ff 0%, #aeeaff 45%, #fff3bf 100%); border-bottom:1px solid rgba(0,0,0,.08)}
+    .top-left,.top-right{display:flex; align-items:center; gap:10px}
+    .top-left img,.top-right img{height:56px; width:auto; object-fit:contain; background:#fff0; border-radius:12px}
+    .top-title{font-weight:800; letter-spacing:.5px; font-size:clamp(20px,3vw,28px); text-align:center; color:#0c5166}
+    .school{font-weight:700; color:#0b3d54; white-space:nowrap}
+    @media (max-width:680px){ .topbar{grid-template-columns:1fr 1fr; row-gap:6px} .top-right{justify-content:end} .top-title{grid-column:1/3} .school{font-size:12px}}
+    /* عداد المتابعين */
+    .followers{position:absolute; left:18px; top:90px; display:flex; align-items:center; gap:8px; background:#0a6a82; color:#fff; padding:6px 10px; border-radius:12px; box-shadow:var(--shadow); font-weight:800}
+    .followers .dot{width:8px;height:8px;border-radius:50%;background:#7fffd4}
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="top-left">
+      <img id="logoLeft" src="assets/kahnat_logo.png" onerror="this.onerror=null; this.src='assets/kahnat_logo_transparent.png';" alt="شعار مدرسة كهنات">
+      <div class="school">مدرسة كهنات للتعليم الأساسي</div>
+    </div>
+    <div class="top-title">الهويّة والمواطنة</div>
+    <div class="top-right">
+      <img id="civicsRight" src="assets/identity-civics.png" onerror="this.onerror=null; this.src='assets/identity-civics.jpg';" alt="الهوية والمواطنة">
+    </div>
+  </div>
+  <div class="followers" id="followers"><span class="dot"></span><span>المتابعون:</span><b id="followersNum">0</b></div>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">KB</div>
+        <div>
+          <h1>اختبار: <span style="color:#b38300">تواصُلي مع أفراد عائلتي</span></h1>
+          <div style="font-weight:700; color:#004d61; margin-top:4px">الصف الثالث — الوحدة الثانية: أفتخر بعائلتي</div>
+          <div class="subtitle">اختبار تفاعلي لتقييم عاداتي اللغوية داخل الأسرة.</div>
+        </div>
+      </div>
+      <div class="toolbar">
+        <button id="btnSave">💾 حفظ</button>
+        <button class="secondary" id="btnPrint">🖨️ طباعة</button>
+        <button class="ghost" id="btnCSV">⬇️ تصدير CSV</button>
+        <button class="ghost" id="btnStartAll">▶️ بدء المؤقتات</button>
+        <button class="ghost" id="btnResetAll">⏹️ إيقاف</button>
+        <button class="ghost" id="btnTestSound">🔊 اختبار الصوت</button>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2 style="margin-top:0; color:#0e4b5c">بنود السلوك</h2>
+      <table role="table">
+        <thead>
+          <tr><th style="width:45%">السلوك</th><th style="width:20%">العبارة المقترحة</th><th style="width:18%">أطبّق / لا أطبّق</th><th style="width:17%">المؤقّت (1:00)</th></tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </section>
+
+    <section class="result">
+      <div class="card score-card" aria-live="polite">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+          <div><div class="pill" id="pillStatus" style="background:rgba(18,214,154,.15); color:#0a5c44">جاهز للتقييم</div><div class="score" id="score">0 / 6</div></div>
+          <div style="text-align:end"><div style="font-weight:800; color:#0e4b5c">المستوى</div><div id="level" style="color:#0e4b5c">—</div></div>
+        </div>
+        <div class="meter"><div class="bar" id="bar"></div></div>
+        <div class="hint" id="hint" style="margin-top:10px">حرّك الاختيارات؛ تُحدث الدرجة مباشرة.</div>
+      </div>
+      <div class="card"><h3 style="margin-top:0; color:#0e4b5c">نصائح شخصية</h3><ol id="tips" style="margin:0; padding-right:18px"></ol></div>
+    </section>
+
+    <p class="footer">مدرسة كهنات للتعليم الاساسي</p>
+  </div>
+
+<script>
+  // ====== الصوت ======
+  let AUDIO_CTX=null;
+  function ensureAudio(){ try{ if(!AUDIO_CTX){ AUDIO_CTX=new (window.AudioContext||window.webkitAudioContext)(); } if(AUDIO_CTX.state==='suspended'){ AUDIO_CTX.resume(); } }catch(e){} }
+  function beep(times=2){ ensureAudio(); const now=AUDIO_CTX.currentTime; for(let k=0;k<times;k++){ const t=now+k*0.45; const o=AUDIO_CTX.createOscillator(); const g=AUDIO_CTX.createGain(); o.type='square'; o.frequency.value=900; o.connect(g); g.connect(AUDIO_CTX.destination); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.4,t+0.02); o.start(t); o.stop(t+0.35);}}
+  function chimeSuccess(){ ensureAudio(); const now=AUDIO_CTX.currentTime, seq=[880,1175,1320]; seq.forEach((f,i)=>{ const t=now+i*0.12, o=AUDIO_CTX.createOscillator(), g=AUDIO_CTX.createGain(); o.type='sine'; o.frequency.value=f; o.connect(g); g.connect(AUDIO_CTX.destination); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.3,t+0.02); o.start(t); o.stop(t+0.18);});}
+  function chimeNo(){ ensureAudio(); const now=AUDIO_CTX.currentTime, o=AUDIO_CTX.createOscillator(), g=AUDIO_CTX.createGain(); o.type='triangle'; o.frequency.setValueAtTime(360,now); o.frequency.exponentialRampToValueAtTime(240, now+0.25); o.connect(g); g.connect(AUDIO_CTX.destination); g.gain.setValueAtTime(0.0001,now); g.gain.exponentialRampToValueAtTime(0.35,now+0.02); o.start(now); o.stop(now+0.28);}
+
+  // ====== البيانات ======
+  const ITEMS=[
+    {id:1,text:"عند مُصافحتي لأفراد عائلتي أقول تحيَّة لطيفة.",phrase:"مرحبًا بكم، كيف حالكم؟"},
+    {id:2,text:"عندما أُخطئ في حقِّ أحدِ أفرادِ العائلة أعتذر.",phrase:"آسف/آسفة، وأعتذر."},
+    {id:3,text:"عند دخولي المنزل أبدأ بالسلام.",phrase:"السّلام عليكم ورحمةُ اللهِ وبركاتُه."},
+    {id:4,text:"أُهنِّئ أفراد عائلتي في المناسبات بكلماتٍ جميلة.",phrase:"كلُّ عامٍ وأنتم بخير."},
+    {id:5,text:"عندما أحتاج شيئًا من أحد أفراد عائلتي أطلب بأدب.",phrase:"من فضلك/من فضلكم."},
+    {id:6,text:"عندما يساعدني أفراد عائلتي أعبِّر عن الامتنان.",phrase:"شكرًا لكم."}
+  ];
+
+  const tbody=document.getElementById('tbody'); const scoreEl=document.getElementById('score'); const levelEl=document.getElementById('level'); const barEl=document.getElementById('bar'); const tipsEl=document.getElementById('tips'); const pillStatus=document.getElementById('pillStatus');
+
+  ITEMS.forEach(it=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td class="q-text">${it.text}</td>
+      <td><span class="pill" style="background:rgba(255,209,102,.5); color:#5d4a00">${it.phrase}</span></td>
+      <td style="text-align:center">
+        <div class="seg">
+          <button class="opt opt-yes" data-id="${it.id}">أطبّق</button>
+          <button class="opt opt-no active" data-id="${it.id}">لا أطبّق</button>
+        </div>
+      </td>
+      <td>
+        <div class="timerBox">
+          <button class="btnStart" data-id="${it.id}">ابدأ</button>
+          <span class="time" id="time-${it.id}">01:00</span>
+        </div>
+        <div class="msg" id="msg-${it.id}">انتهى زمن الإجابة، حاول مرة أخرى.</div>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+
+  function calc(){
+    const yesCount = [...document.querySelectorAll('.opt-yes.active')].length;
+    const total = ITEMS.length; const pct = Math.round((yesCount/total)*100);
+    scoreEl.textContent = `${yesCount} / ${total}`; barEl.style.width = pct+'%';
+    let level='—', ok=true; if(yesCount===total) level='ممتاز جدًا'; else if(yesCount>=4) level='جيد جدًا'; else if(yesCount>=2){ level='يحتاج تعزيز'; ok=false;} else {level='بحاجة كبيرة للتحسين'; ok=false;}
+    levelEl.textContent=level; pillStatus.className='pill '+(ok?'ok':'warn'); pillStatus.textContent = ok?'أداء مُطمئِن':'فلنحسّن معًا';
+    tipsEl.innerHTML=''; ITEMS.forEach((m,i)=>{ const yes=document.querySelectorAll('.opt-yes')[i].classList.contains('active'); if(!yes){ const li=document.createElement('li'); li.innerHTML=`جرب عبارة <b>“${m.phrase}”</b> عند تطبيق بند: <b>${m.text}</b>.`; tipsEl.appendChild(li);} });
+  }
+
+  function save(){ const state=[...document.querySelectorAll('.opt-yes,.opt-no')].map(b=>b.classList.contains('active')?1:0); localStorage.setItem('family-comm-quiz-v2-kahnat-logos', JSON.stringify(state)); pillStatus.textContent='تم الحفظ على هذا الجهاز'; }
+  function restore(){ const raw=localStorage.getItem('family-comm-quiz-v2-kahnat-logos'); if(!raw) return; const state=JSON.parse(raw); const btns=[...document.querySelectorAll('.opt-yes,.opt-no')]; btns.forEach((b,i)=>{ if(state[i]) b.classList.add('active'); else b.classList.remove('active');}); ITEMS.forEach((it,i)=>{ const y=document.querySelectorAll('.opt-yes')[i]; const n=document.querySelectorAll('.opt-no')[i]; if(!(y.classList.contains('active')||n.classList.contains('active'))) n.classList.add('active');}); }
+
+  const TIMERS=new Map();
+  function startTimer(id){ clearTimer(id); ensureAudio(); let remain=60; const timeEl=document.getElementById(`time-${id}`); const msgEl=document.getElementById(`msg-${id}`); msgEl.classList.remove('show'); timeEl.classList.remove('warn'); timeEl.textContent=format(remain); const int=setInterval(()=>{ remain--; if(remain<=10) timeEl.classList.add('warn'); timeEl.textContent=format(remain); if(remain<=0){ clearInterval(int); TIMERS.delete(id); msgEl.classList.add('show'); beep(2); timeEl.textContent='00:00'; } },1000); TIMERS.set(id,int); }
+  function clearTimer(id){ const int=TIMERS.get(id); if(int){ clearInterval(int); TIMERS.delete(id);} const timeEl=document.getElementById(`time-${id}`); const msgEl=document.getElementById(`msg-${id}`); if(timeEl){ timeEl.textContent='01:00'; timeEl.classList.remove('warn'); } if(msgEl){ msgEl.classList.remove('show'); } }
+  function format(s){ const m=String(Math.floor(s/60)).padStart(2,'0'); const sec=String(s%60).padStart(2,'0'); return `${m}:${sec}`; }
+
+  document.addEventListener('click', (e)=>{
+    if(e.target.id==='btnTestSound'){ ensureAudio(); beep(3); }
+    if(e.target.classList.contains('btnStart')){ startTimer(e.target.getAttribute('data-id')); }
+    if(e.target.classList.contains('opt')){ ensureAudio(); const id=e.target.getAttribute('data-id'); const yes=e.target.classList.contains('opt-yes'); document.querySelectorAll(`.opt[data-id="${id}"]`).forEach(b=>b.classList.remove('active')); e.target.classList.add('active'); if(yes) chimeSuccess(); else chimeNo(); clearTimer(id); calc(); }
+  });
+  document.getElementById('btnSave').addEventListener('click', save);
+  document.getElementById('btnPrint').addEventListener('click', ()=>window.print());
+  document.getElementById('btnCSV').addEventListener('click', ()=>{
+    const rows=[['#','السلوك','العبارة','تطبيق']];
+    ITEMS.forEach((m,i)=>{ const yes=document.querySelectorAll('.opt-yes')[i].classList.contains('active')?'أطبق':'لا أطبق'; rows.push([i+1,m.text,m.phrase,yes]);});
+    const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob=new Blob(["\uFEFF"+csv],{type:'text/csv;charset=utf-8;'}); const url=URL.createObjectURL(blob);
+    const a=Object.assign(document.createElement('a'),{href:url,download:'family-communication-quiz.csv'}); document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  });
+  document.getElementById('btnStartAll').addEventListener('click', ()=> ITEMS.forEach(it=> startTimer(it.id)));
+  document.getElementById('btnResetAll').addEventListener('click', ()=> ITEMS.forEach(it=> clearTimer(it.id)));
+
+  // عداد المتابعين
+  (function followersCounter(){
+    const el = document.getElementById('followersNum');
+    const params = new URLSearchParams(location.search);
+    const seed = parseInt(params.get('seed')||'NaN');
+    const key = 'followers_count_global';
+    let count = Number.isFinite(seed) ? seed : +(localStorage.getItem(key)||0);
+    const seenKey = 'followers_seen';
+    if(!localStorage.getItem(seenKey)){ count += 1; localStorage.setItem(seenKey,'1'); }
+    localStorage.setItem(key, count);
+    el.textContent = count.toLocaleString('ar-EG');
+  })();
+
+  restore(); calc();
+</script>
+</body>
+</html>
